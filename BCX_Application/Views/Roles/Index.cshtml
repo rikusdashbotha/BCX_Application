@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Roles Page";
+}
+@model BCX_CORE.Objects.Roles.RoleCollection
+
+    <div class="text-center">
+        <h1 class="display-4">Roles</h1>
+        <p>Every employee is linked to a Role. A Role contains rate information.</p>
+        <a role="button" class="btn btn-outline-primary" asp-action="CreateNew" asp-controller="Roles">New Role</a>
+        <div>
+            <form>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Role ID</th>
+                            <th scope="col">Role Name</th>
+                            <th scope="col">Rate Per Hour</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model != null)
+                        {
+                            foreach (var role in Model.Roles)
+                            {
+                                <tr class="">
+                                    <td>@role.Id</td>
+                                    <td>@role.Name</td>
+                                    <td>@role.RatePerHour</td>
+                                    <td>
+                                        <button type="submit" class="btn btn-outline-primary" asp-route-id="@role.Id" asp-action="edit" asp-controller="roles">Edit</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                        else
+                        {
+                            <tr>
+                                <td>No roles yet. <a asp-action="create" asp-controller="orders">Create</a> the first!</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>

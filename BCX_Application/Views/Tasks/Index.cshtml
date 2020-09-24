@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Tasks Page";
+}
+@model BCX_CORE.DTOs.Tasks.TaskCollection
+
+    <div class="text-center">
+        <h1 class="display-4">Tasks</h1>
+        <p>Create tasks here, and assign employees to the, by clicking Assign on the respective task.</p>
+        <a role="button" class="btn btn-outline-primary" asp-action="CreateNew" asp-controller="Tasks">New Task</a>
+        <div>
+            <form>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Task ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model != null)
+                        {
+                            foreach (var task in Model.Tasks)
+                            {
+                                <tr class="">
+                                    <td>@task.Id</td>
+                                    <td>@task.Name</td>
+                                    <td>@task.Duration</td>
+
+                                    <td>
+                                        <button type="submit" class="btn btn-outline-primary" asp-route-id="@task.Id" asp-action="edit" asp-controller="Tasks">Edit</button>
+                                        <a role="button" class="btn btn-outline-primary" asp-action="DetermineRouteAction" asp-route-id="@task.Id" asp-controller="EmployeeTasks">Assign</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                        else
+                        {
+                            <tr>
+                                <td>No tasks yet. <a asp-action="create" asp-controller="Tasks">Create</a> the first!</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>

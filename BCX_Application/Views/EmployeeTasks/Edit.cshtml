@@ -1,0 +1,301 @@
+﻿@model BCX_CORE.DTOs.EmployeeTasks.EmployeeTaskCollection
+
+@*@{
+    ViewData["Title"] = "Edit";
+}*@
+<html>
+<head>
+
+</head>
+
+
+<body>
+
+    <h1>Edit</h1>
+
+    <h4>List Employees against this Task</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @Html.HiddenFor(c => c.TaskId)
+
+                <fieldset>
+                    <table class="table table-hover" id="tblEmployees">
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Employee Id</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (Model != null)
+                            {
+                                @foreach (var line in Model.EmployeeTasks)
+                                {
+                                    <tr>
+                                        <td>@line.EmployeeId</td>
+                                        <td>@line.Employee.LastName, @line.Employee.FirstName</td>
+                                        <td><button type="button" class="btn btn btn-outline-warning" value="Remove" onclick="employeeTask.Remove(this)">Remove</button></td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td style="max-width: 20px"></td>
+                                <td style="max-width: 80px">
+                                    <div class="form-group">
+                                        <select class="custom-select" asp-items="ViewBag.Employees" name="Employees" id="Employees"></select> @*asp-for="EmployeeId"*@
+                                        @*<span asp-validation-for="EmployeeId"></span>*@
+                                    </div>
+                                </td>
+                                <td><button type="button" class="btn btn btn-outline-info" id="btnAdd" value="Add">Add</button></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <br />
+                    @*<input type="button" class="btn btn-primary" id="btnSave" value="Save" />*@
+                </fieldset>
+
+                <div class="form-group">
+                    @*<input type="submit" value="Create" asp-controller="EmployeeTasks" asp-action="CreateNew" class="btn btn-primary" />*@
+                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" />
+                </div>
+            </form>
+        </div>
+
+        <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center">
+            <div style="position: absolute; top: 60px; right: 30px;">
+                <div class="toast" id="alreadyadded" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" data-autohide="true">
+                    <div class="toast-header">
+                        @*<img src="..." class="rounded mr-2" alt="...">*@
+                        <strong class="mr-auto">Employee was not added</strong>
+                        @*<small class="text-muted">just now</small>*@
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        This employee has already been listed for this task.
+                    </div>
+                </div>
+            </div>
+
+            <div style="position: absolute; top: 60px; right: 30px;">
+                <div class="toast" id="added" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" data-autohide="true">
+                    <div class="toast-header">
+                        @*<img src="..." class="rounded mr-2" alt="...">*@
+                        <strong class="mr-auto">Employee was added</strong>
+                        @*<small class="text-muted">just now</small>*@
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        Employee assigned to this task.
+                    </div>
+                </div>
+            </div>
+
+            <div style="position: absolute; top: 60px; right: 30px;">
+                <div class="toast" id="removed" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" data-autohide="true">
+                    <div class="toast-header">
+                        @*<img src="..." class="rounded mr-2" alt="...">*@
+                        <strong class="mr-auto">Employee was removed</strong>
+                        @*<small class="text-muted">just now</small>*@
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        Employee removed from this task.
+                    </div>
+                </div>
+            </div>
+
+            <div style="position: absolute; top: 60px; right: 30px;">
+                <div class="toast" id="listempty" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" data-autohide="true">
+                    <div class="toast-header">
+                        @*<img src="..." class="rounded mr-2" alt="...">*@
+                        <strong class="mr-auto">No employees assigned</strong>
+                        @*<small class="text-muted">just now</small>*@
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        Please check your list. It appears to be empty. Please assign employees to this task before attempting to save it.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @*<a asp-action="Index">Back to List</a>*@
+    </div>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+    <script type="text/javascript">
+
+        class clsEmployeeTask {
+            constructor() {
+                this.employees = [];
+                this.Init();
+                this.taskId = 0;
+                //this.BuildEmployeeList();
+            }
+
+            //BuildEmployeeList() {
+            //    //Populate employeeList
+            //    $("#tblEmployees TBODY TR").each(function () {
+            //        var row = $(this);
+            //        var id = parseInt(row.find("TD").eq(0).html());
+            //        employeeTask.employees.push(id);
+            //    });
+            //};
+
+            Init() {
+                $(document).ready(function () {
+
+                    employeeTask.taskId = $("#TaskId").val();
+
+                    //populate Employees List
+                    $("#tblEmployees TBODY TR").each(function () {
+                        var row = $(this);
+                        var id = parseInt(row.find("TD").eq(0).html());
+                        employeeTask.employees.push(id);
+                    });
+
+
+                    $('#btnAdd').click(function () {
+                        var selectedId = parseInt($("#Employees").val());
+                        //Check existing employees first
+                        if (employeeTask.employees.includes(selectedId)) {
+                            //Already exists, show prompt
+                            $("#alreadyadded").toast('show');
+                        }
+                        else {
+                            //Add selected Id to list
+                            employeeTask.employees.push(selectedId);
+                            //var table = document.getElementById("tblEmployees");
+                            var table = $("#tblEmployees > TBODY")[0];
+                            var row = table.insertRow(-1);
+
+                            //Set references
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+
+                            //Set referenced properties
+                            cell1.innerHTML = selectedId;
+                            cell2.innerHTML = $("#Employees option:selected").text();
+                            cell3.innerHTML = "<button type='button' class='btn btn btn-outline-warning' value='Remove' id='btnRemove' onclick='employeeTask.Remove(this)' >Remove</button>";
+
+                            $("#added").toast('show');
+                        }
+                    });
+
+                    $('#btnSave').click(function () {
+                        //Loop through the Table rows and build a JSON array.
+                        //var customer = {
+                        //    Id: $("#customerid").val(),
+                        //    Name: $("#customerid option:selected").text(),
+                        //    Order: ''
+                        //};
+                        if (employeeTask.employees.length <= 0) {
+                            $("#listempty").toast('show');
+                        }
+                        else {
+
+                            //var order = {
+                            //    Id: $("#Id").val(),
+                            //    Customer: customer,
+                            //    OrderDate: $("#orderdate").val(),
+                            //    Lines: []
+                            //};
+
+                            var employeeTaskCollection = {
+                                TaskId: parseInt(employeeTask.taskId),
+                                EmployeeTasks: []
+                            };
+
+                            //var orders = new Array();
+                            $("#tblEmployees TBODY TR").each(function () {
+
+                                var row = $(this);
+
+                                //line.Id = row.find("TD").eq(0).html();
+                                //line.ItemDescription = row.find("TD").eq(1).html();
+                                //line.Price = parseFloat(row.find("TD").eq(2).html()).toFixed(2);
+                                //line.Quantity = parseInt(row.find("TD").eq(3).html());
+                                //line.OrderId = order.Id;
+                                //order.Lines.push(line);
+
+                                var employeeTaskDto = {};
+                                //employeeTask.Id = row.find("TD").eq(0).html(); //TODO RB: How to get this?
+                                employeeTaskDto.Id = 0;
+                                employeeTaskDto.EmployeeId = parseInt(row.find("TD").eq(0).html());
+                                employeeTaskDto.TaskId = parseInt(employeeTask.taskId);
+
+                                employeeTaskCollection.EmployeeTasks.push(employeeTaskDto);
+                            });
+
+                            //stringify the data
+                            var data2send = JSON.stringify(employeeTaskCollection);
+
+                            //Make ajax request to controller instead of API controller
+                            $.ajax({
+                                type: 'POST',
+                                url: '/EmployeeTasks/Edit',
+                                data: data2send,
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
+                                success: function (r) {
+                                    //alert(r + " record(s) inserted.");
+                                }
+                            });
+                        }
+                    });
+
+                });
+            };
+
+            Remove(button) {
+                //Determine the reference of the Row using the Button.
+                var row = $(button).closest("TR");
+                var selectedId = parseInt($("TD", row).eq(0).html());
+                var table = $("#tblEmployees")[0];
+                //var position = employeeTask.employees.indexOf(parseInt(selectedId));
+                var position = employeeTask.employees.indexOf(selectedId);
+
+
+                if (employeeTask.employees.includes(selectedId)) {
+                    //Exists in list, show prompt and remove
+                    //Delete the Table row using it's Index.
+                    table.deleteRow(row[0].rowIndex);
+                    employeeTask.employees.splice(position, 1);
+                    $("#removed").toast('show');
+                }
+            };
+        };
+
+        employeeTask = new clsEmployeeTask();
+
+
+    </script>
+
+</body>
+</html>

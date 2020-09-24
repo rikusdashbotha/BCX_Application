@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Employees Page";
+}
+@*@model BCX_CORE.DTOs.Hours.HourCollection*@
+@model BCX_CORE.DTOs.Hours.HourDto
+
+    <div class="text-center">
+        <h1 class="display-4">Hours</h1>
+        <p>Select an employee below to see what they are owed across all tasks, for their entire period.</p>
+        <a role="button" class="btn btn-outline-primary" asp-action="CreateNew" asp-controller="Hours">Capture Hours</a>
+        <div>
+            <form>
+
+                <div class="form-group col-4">
+                    <select class="custom-select" asp-items="ViewBag.Employees" name="Employees" id="Employees"></select> @*asp-for="EmployeeId"*@
+                    @*<span asp-validation-for="EmployeeId"></span>*@
+                </div>
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Employee</th>
+                            <th scope="col">Total Due Over Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model != null)
+                        {
+                            <tr>
+                                <td>@Model.Employee.FirstName @Model.Employee.LastName</td>
+                                <td>@Model.Total</td>
+                            </tr>
+                        }
+
+                        else
+                        {
+                            <tr>
+                                <td>No hours captured yet. <a asp-action="create" asp-controller="Hours">Capture</a> the first!</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+        <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+        <script type="text/javascript">
+
+        class clsHourIndex {
+            constructor() {
+                this.Init();
+            }
+
+            Init() {
+                $(document).ready(function () {
+
+                    $('#Employees').change(function () {
+                        //Load tasks for this employee on Employee select
+                        var selectedId = $("#Employees").val();
+
+
+                        window.location.href = "/Hours/Index?Id=" + selectedId;
+                        
+                    });
+
+                    
+                });
+            };
+        };
+
+        hourIndex = new clsHourIndex();
+
+
+        </script>
+
+    </div>

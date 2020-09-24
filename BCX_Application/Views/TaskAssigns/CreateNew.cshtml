@@ -1,0 +1,91 @@
+﻿@model BCX_CORE.DTOs.TaskAssigns.TaskAssignDto
+
+@{
+    ViewData["Title"] = "CreateNew";
+}
+
+<h1>Create New</h1>
+
+<h4>Task Assign</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Task</label>
+                <select class="custom-select" asp-items="ViewBag.Tasks" asp-for="TaskId" name="TaskId" id="TaskId"></select>
+                <span asp-validation-for="TaskId"></span>
+            </div>
+
+            <fieldset>
+                <table class="table table-hover" id="tblTaskAssigns">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var line in Model.Employees)
+                        {
+                            <tr>
+                                <td></td>
+                                <td>@line.Id</td>
+                                <td>@line.LastName, @line.FirstName</td>
+                                <td><button type="button" class="btn btn btn-outline-warning" value="Remove" onclick="Remove(this)">Remove</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td style="max-width: 50px"><input class="form-control form-control" type="text" id="txtdescription" placeholder="Item Description" /></td>
+                            <td style="max-width: 40px">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">R</span>
+                                    </div>
+                                    <input class="form-control form-control" type="text" id="txtprice" />
+                                </div>
+                            </td>
+                            <td style="max-width: 30px"><input class="form-control form-control" type="text" id="txtquantity" /></td>
+                            <td><button type="button" class="btn btn btn-outline-info" id="btnAdd" value="Add">Add</button></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br />
+                <input type="button" class="btn btn-primary" id="btnSave" value="Save" />
+            </fieldset>
+
+            @*<div class="form-group">
+            <label class="control-label">Role</label>
+            <select class="custom-select" asp-items="ViewBag.Roles" asp-for="RoleId" name="RoleId" id="RoleId"></select>
+            <span asp-validation-for="RoleId"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImagePath" class="control-label"></label>
+            <div class="custom-file">
+                <input asp-for="ImageFile" accept="image/*" />
+                <label class="custom-file-label" for="ImageFile">Choose file</label>
+            </div>
+            <span asp-validation-for="ImagePath" class="text-danger"></span>
+        </div>*@
+
+            <div class="form-group">
+                <input type="submit" value="Create" asp-controller="TaskAssigns" asp-action="CreateNew" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
