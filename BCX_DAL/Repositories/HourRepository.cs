@@ -27,29 +27,21 @@ namespace BCX_DAL.Repositories
             return await _context.Hours.ToListAsync();
         }
 
-        public async Task<Hour> GetHour(/*Consider Paging input model here*/int employeeId, DateTime fromDate, DateTime toDate)
+        public async Task<Hour> GetHour(int employeeId, DateTime fromDate, DateTime toDate)
         {
             //Get list of Total hours per employee.
-
-            //var query = from employee in _context.Employees
-            //            join hour in _context.Hours on employee.Id equals hour.EmployeeId
-            //            where (hour.DateWorked < toDate && hour.DateWorked >= fromDate && employee.Id == employeeId)
-            //            select new { employee.Id, employee.FirstName, employee.LastName, hour.Total };
-
+            //Build IQueryable with joined query based on specific ID, with filters for From and To Dates.
+            //Select results into a custom Tuple Class for brevity
             var query = await  (from employee in _context.Employees
-                                            join hour in _context.Hours on employee.Id equals hour.EmployeeId
-                                            where hour.DateWorked < toDate && hour.DateWorked >= fromDate && employee.Id == employeeId
-                                            select new TupleClass() { weirdClass = new Tuple<int, string, string, double>(employee.Id, employee.FirstName, employee.LastName, hour.Total) }).ToListAsync();
+                join hour in _context.Hours on employee.Id equals hour.EmployeeId
+                where hour.DateWorked < toDate && hour.DateWorked >= fromDate && employee.Id == employeeId
+                select new TupleClass() { weirdClass = new Tuple<int, string, string, double>
+                (employee.Id, employee.FirstName, employee.LastName, hour.Total) }).ToListAsync();
 
-
-
-            //var actualrecord = query.ToList<TupleClass>();
+            //Determine the summed total for all rates worked
             var summed = query.Sum(p => p.weirdClass.Item4);
-
-            //var test = await _context.Hours
-            //    //.Include(c => c.Role)
-            //    .ToListAsync();
             
+            //Build simple object to return to view
             Hour final = new Hour() { Employee = new Employee() 
             { 
                 Id = query[0].weirdClass.Item1,
@@ -63,14 +55,16 @@ namespace BCX_DAL.Repositories
         }
 
         public async Task<Hour> InsertHour(Hour data)
-        {
-            
-
+        {            
             //Get employee rate
+            //Since hour was not eagerly loaded, find related employee's role rate.
             var employee = await _context.Employees.Include(c => c.Role).FirstOrDefaultAsync(c => c.Id == data.EmployeeId);
+
+            //Perform calculations
             data.RoleRateAtTime = employee.Role.RatePerHour;
             data.Total = data.RoleRateAtTime * data.HoursWorked;
 
+            //Add the entity to the context and save changes
             var result =  await _context.Hours.AddAsync(data);
             await _context.SaveChangesAsync();
             return null;
@@ -78,9 +72,11 @@ namespace BCX_DAL.Repositories
 
         public async Task<Hour> UpdateHour(int Id, Hour data)
         {
+            //Update the updated property; Set tracked entity to Modified, update context with the entity and save changes
             try
             {
-                _context.Attach(data).State = EntityState.Detached;
+                data.UpdatedTS = DateTime.Now;
+                _context.Attach(data).State = EntityState.Modified;
                 var result = _context.Hours.Update(data);
                 await _context.SaveChangesAsync();
                 return null;

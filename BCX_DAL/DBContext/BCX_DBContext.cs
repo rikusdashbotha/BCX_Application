@@ -39,11 +39,6 @@ namespace BCX_DAL.Context
                .WithMany(c => c.EmployeeTasks)
                .HasForeignKey(c => c.TaskId);
 
-            //modelBuilder.Entity<Hour>()
-            //    .HasOne(c => c.TaskAssign)
-            //    .WithMany(c => c.Hours)
-            //    .HasForeignKey(c => c.TaskAssignId);
-
             modelBuilder.Entity<Hour>()
                 .HasOne(c => c.Employee)
                 .WithMany(c => c.Hours)
